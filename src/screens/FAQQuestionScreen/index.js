@@ -4,6 +4,9 @@ import { Menu } from "../../components/commons/Menu";
 import { cmsService } from "../../infra/cms/cmsService";
 import { Box, Text, theme } from "../../theme/components";
 
+import { renderNodeRule, StructuredText } from "react-datocms";
+import { isHeading } from "datocms-structured-text-utils";
+
 export async function getStaticPaths() {
   return {
     paths: [{ params: { id: "f138c88d" } }, { params: { id: "h138c88d" } }],
@@ -28,10 +31,12 @@ export async function getStaticProps({ params }) {
   const { data } = await cmsService({
     query: contentQuery,
   });
+
   console.log("Dados do CMS:", data);
 
   return {
     props: {
+      cmsContent: data,
       id,
       title: data.contentFaqQuestion.title,
       content: data.contentFaqQuestion.content,
@@ -39,7 +44,8 @@ export async function getStaticProps({ params }) {
   };
 }
 
-export default function FAQQuestionScreen({ title, content }) {
+export default function FAQQuestionScreen({ cmsContent }) {
+  // console.log(cmsContent.globalContent.globalFooter.description);
   return (
     <>
       <Head>
@@ -59,24 +65,34 @@ export default function FAQQuestionScreen({ title, content }) {
       >
         <Box
           styleSheet={{
-            display: "flex",
-            gap: theme.space.x4,
             flexDirection: "column",
             width: "100%",
             maxWidth: theme.space.xcontainer_lg,
             marginHorizontal: "auto",
           }}
         >
-          <Text tag="h1" variant="heading1">
-            {title}
-          </Text>
+          {/* <h1>{title}</h1> */}
+          <h1>{cmsContent.contentFaqQuestion.title}</h1>
 
           {/* <Box dangerouslySetInnerHTML={{ __html: content }} /> */}
-          <pre>{JSON.stringify(content, null, 4)}</pre>
+          {/* <pre>{JSON.stringify(content, null, 4)}</pre> */}
+          <StructuredText
+            // data={content}
+            data={cmsContent.contentFaqQuestion.content}
+            customNodeRules={[
+              renderNodeRule(isHeading, ({ node, children, key }) => {
+                return (
+                  <Text key={key} tag="h3" variant="heading3">
+                    {children}
+                  </Text>
+                );
+              }),
+            ]}
+          />
         </Box>
       </Box>
 
-      <Footer />
+      <Footer description={cmsContent.globalContent.globalFooter.description} />
     </>
   );
 }
