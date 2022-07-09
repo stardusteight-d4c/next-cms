@@ -1,52 +1,86 @@
-import Head from 'next/head';
-import { Footer } from '../../components/commons/Footer';
-import { Menu } from '../../components/commons/Menu';
-import { pageHOC } from '../../components/wrappers/pageHOC';
-import { cmsService } from '../../infra/cms/cmsService';
-import { Box, Text, Link, Image, theme } from '../../theme/components';
+import Head from "next/head";
+import { Footer } from "../../components/commons/Footer";
+import { Menu } from "../../components/commons/Menu";
+import { pageHOC } from "../../components/wrappers/pageHOC";
+import { CMSSectionRender } from "../../infra/cms/CMSSectionRender";
+import { cmsService } from "../../infra/cms/cmsService";
+import { Box, Text, Link, Image, theme } from "../../theme/components";
 
 export async function getStaticProps({ preview }) {
   const { data: cmsContent } = await cmsService({
     query: `
-      query {
-        __typename
+    query {
+      pageFaq {
+        pageContent {
+          section {
+            componentName: __typename
+            ... on CommonSeoBlockRecord {
+              id
+              title
+            }
+            ... on CommonMenuRecord {
+              id
+            }
+            ... on CommonFooterRecord {
+              id
+            }
+            ... on PagefaqDisplayquestionSectionRecord {
+              id
+              categories {
+                id
+                title
+                questions {
+                  id
+                  title
+                }
+              }
+            }
+          }
+        }
       }
+    }
     `,
     preview,
   });
-
 
   return {
     props: {
       cmsContent,
       categories: [
         {
-          id: 'b4bb5090',
-          name: 'Por onde começar',
+          id: "b4bb5090",
+          name: "Por onde começar",
           questions: [
             {
-              id: 'f138c88d',
-              name: 'Consigo entrar no mercado de trabalho com os cursos da Alura?',
-              content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-            }
-          ]
+              id: "f138c88d",
+              name: "Consigo entrar no mercado de trabalho com os cursos da Alura?",
+              content:
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            },
+          ],
         },
         {
-          id: 'c4bb5090',
-          name: 'Formações e Projetos',
+          id: "c4bb5090",
+          name: "Formações e Projetos",
           questions: [
             {
-              id: 'h138c88d',
-              name: 'Qual é a diferença do certificado de participação para o certificado de conclusão de formação?',
-              content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-            }
-          ]
-        }
-      ]
-    }
-  }
+              id: "h138c88d",
+              name: "Qual é a diferença do certificado de participação para o certificado de conclusão de formação?",
+              content:
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            },
+          ],
+        },
+      ],
+    },
+  };
 }
 
+function FAQAllQuestionsScreen() {
+  return <CMSSectionRender pageName="pageFaq" />;
+}
+
+/*
 function FAQAllQuestionsScreen({ categories }) {
   return (
     <>
@@ -78,7 +112,7 @@ function FAQAllQuestionsScreen({ categories }) {
             marginHorizontal: 'auto',
           }}
         >
-          {/* Block: Title Questions */}
+         
           <Box
             styleSheet={{
               flex: 2,
@@ -111,7 +145,6 @@ function FAQAllQuestionsScreen({ categories }) {
             />
           </Box>
 
-          {/* Block: Questions */}
           <Box
             styleSheet={{
               flex: 3,
@@ -143,5 +176,6 @@ function FAQAllQuestionsScreen({ categories }) {
     </>
   )
 }
+*/
 
 export default pageHOC(FAQAllQuestionsScreen);
