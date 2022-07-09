@@ -1,6 +1,6 @@
-import { Box, Text, theme } from '../../../theme/components';
+import { Box, Link, Text, theme } from "../../../theme/components";
 
-export function Footer({description}) {
+export function Footer({ description }) {
   return (
     <Box
       tag="footer"
@@ -20,13 +20,17 @@ export function Footer({description}) {
       >
         <Text
           styleSheet={{
-            justifyContent: 'center',
-            color: theme.colors.neutral.x000
+            justifyContent: "center",
+            color: theme.colors.neutral.x000,
           }}
         >
           &copy; {new Date().getFullYear()} {description}
         </Text>
+        {/* Não será exibido em ambiente de produção */}
+        {process.env.NODE_ENV !== "production" && (
+          <Link href="/api/preview?password=SENHASEGURA">Preview Mode</Link>
+        )}
       </Box>
     </Box>
-  )
+  );
 }
